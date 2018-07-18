@@ -11,7 +11,8 @@
             $luzon_data=$this->Mcsd->luzon_list();
             $vis_data=$this->Mcsd->vis_list();
             $sys_data=$this->Mcsd->sys_list();
-            $curr_data=array_merge($luzon_data,$vis_data,$sys_data);
+            $curr_data=array_merge($luzon_data,$vis_data);
             echo json_encode($curr_data);
-        }
+         
     }
+}
