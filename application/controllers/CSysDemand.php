@@ -11,7 +11,10 @@
             $luzon_data=$this->Mcsd->luzon_list();
             $vis_data=$this->Mcsd->vis_list();
             $sys_data=$this->Mcsd->sys_list();
-            $curr_data=array_merge($luzon_data,$vis_data);
+            $curr_data=array_merge($luzon_data,$vis_data,$sys_data);
+            $fp = fopen('data.json', 'w');
+            fwrite($fp, json_encode($curr_data, JSON_PRETTY_PRINT));  
+            fclose($fp);
             echo json_encode($curr_data);
          
     }
