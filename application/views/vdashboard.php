@@ -46,15 +46,22 @@
 
        $(function () {
                 var processed_json = new Array();   
-                $.getJSON('http://localhost:8080/sysdemand/index.php/csysdemand/get_csd', function(data) {
+                $.getJSON('http://localhost:1234/sysdemand/index.php/csysdemand/get_csd', function(data) {
                     // Populate series
+                    function bouncer(arr){
+                        return arr.filter(Boolean);
+                    }
                    function pad(n, width, z) {
                                 z = z || '0';
                                 n = n + '';
                                 return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
                             }
+                    function avg(x){
+                        bouncer(x).reduce((previous, current)=>current+=previous);
+                        return x/bouncer(x).length;
+                    }
                  data.forEach(function(arr) {
-                          //dap
+         
                                 if(arr['sd_region'] == "LUZON") {
                                 for(var i = 1; i <= 24; ++i) {      
                                 ldapel.push(parseInt(arr['sd_dapel_' + pad(i, 2)],10));      
@@ -62,11 +69,20 @@
                                 lrtx.push(parseInt(arr['sd_rtx_'+pad(i,2)],10));
                                 
                                 }
-                                min_lrtd=Math.min(parseInt(lrtd,10));
-                                max_lrtd=Math.max(...parseInt(lrtd,10));
-                                min_lrtd=Math.min(parseInt(lrtd,10));
-                                console.log(max_lrtd);
-                                console.log(lrtd);
+                                ave_lrtd=avg(lrtd);
+                                ave_lrtx=avg(lrtx);
+                                min_lrtd=Math.min(...bouncer(lrtd));
+                                max_lrtd=Math.max(...bouncer(lrtd)); 
+                                min_lrtx=Math.min(...bouncer(lrtx));
+                                max_lrtx=Math.max(...bouncer(lrtx)); 
+                                $("#lminrtx").html(parseInt(min_lrtx));                                
+                                $("#lmaxrtx").html(parseInt(max_lrtx));
+                                $("#lavertx").html(parseInt(ave_lrtx));
+                                $("#lminrtd").html(parseInt(min_lrtd));
+                                $("#lmaxrtd").html(parseInt(max_lrtd));                                
+                                $("#lavertd").html(parseInt(ave_lrtd));
+                                
+                                
                                 }
                                 if(arr['sd_region'] == "VISAYAS") {
                                 for(var i = 1; i <= 24; ++i) {      
@@ -76,6 +92,19 @@
                                 
                                // console.log(vdapel);
                                 }
+                                ave_vrtd=avg(lrtd);
+                                ave_vrtx=avg(lrtx);
+                                min_vrtd=Math.min(...bouncer(vrtd));
+                                max_vrtd=Math.max(...bouncer(vrtd)); 
+                                min_vrtx=Math.min(...bouncer(vrtx));
+                                max_vrtx=Math.max(...bouncer(vrtx)); 
+                                $("#vminrtx").html(parseInt(min_vrtx));                                
+                                $("#vmaxrtx").html(parseInt(max_vrtx));
+                                $("#vavertx").html(parseInt(ave_vrtx));
+                                $("#vminrtd").html(parseInt(min_vrtd));
+                                $("#vmaxrtd").html(parseInt(max_vrtd));                                
+                                $("#vavertd").html(parseInt(ave_vrtd));
+                                
                                 }
                                 if(arr['sd_region'] == "SYSTEM") {
                                 for(var i = 1; i <= 24; ++i) {      
@@ -85,6 +114,20 @@
                                 
                               //  console.log(vdapel);
                                 }
+                                ave_srtd=avg(srtd);
+                                ave_srtx=avg(srtx);
+                                console.log(ave_srtd);
+                                min_srtd=Math.min(...bouncer(srtd));
+                                max_srtd=Math.max(...bouncer(srtd)); 
+                                min_srtx=Math.min(...bouncer(srtx));
+                                max_srtx=Math.max(...bouncer(srtx)); 
+                                $("#sminrtx").html(parseInt(min_srtx));                                
+                                $("#smaxrtx").html(parseInt(max_srtx));
+                                $("#savertx").html(parseInt(ave_srtx));
+                                $("#sminrtd").html(parseInt(min_srtd));
+                                $("#smaxrtd").html(parseInt(max_srtd));                                
+                                $("#savertd").html(parseInt(ave_srtd));
+                                
                                 }
                                 });
                     // draw chart
@@ -175,7 +218,6 @@
     <div id="container" style="height: 400px;width:450px;align:left;" class="div1"></div>
     <div>
     <br>
-    
         <table class="table-bordered table-striped" cellpadding="10"width="50%">
             <tr>
                 <th></th>
@@ -185,25 +227,24 @@
             </tr>
             <tr>
                 <th>MIN</th>
-                <th></th>
-                <th></th>
-                <th></th>
+                <th id="sminrtd"></th>
+                <th id="lminrtd"></th>
+                <th id="vminrtd"></th>
             </tr>
             <tr>
                 <th>MAX</th>
-                <th></th>
-                <th></th>
-                <th></th>
+                <th id="smaxrtd"></th>
+                <th id="lmaxrtd"></th>
+                <th id="vmaxrtd"></th>
             </tr> <tr>
                 <th>AVE</th>
-                <th></th>
-                <th></th>
-                <th></th>
+                <th id="savertd"></th>
+                <th id="lavertd"></th>
+                <th id="vavertd"></th>
             </tr>
 
         </table>
-        <br>
-        <br>
+        <br><br>
         <table class="table-bordered table-striped" cellpadding="10"width="50%">
             <tr>
                 <th></th>
@@ -213,20 +254,20 @@
             </tr>
             <tr>
                 <th>MIN</th>
-                <th></th>
-                <th></th>
-                <th></th>
+                <th id="sminrtx"></th>
+                <th id="lminrtx"></th>
+                <th id="vminrtx"></th>
             </tr>
             <tr>
                 <th>MAX</th>
-                <th></th>
-                <th></th>
-                <th></th>
+                <th id="smaxrtx"></th>
+                <th id="lmaxrtx"></th>
+                <th id="vmaxrtx"></th>
             </tr> <tr>
                 <th>AVE</th>
-                <th></th>
-                <th></th>
-                <th></th>
+                <th id="savertx"></th>
+                <th id="lavertx"></th>
+                <th id="vavertx"></th>
             </tr>
 
         </table>
