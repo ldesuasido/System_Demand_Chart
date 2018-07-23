@@ -12,10 +12,21 @@
             $vis_data=$this->Mcsd->vis_list();
             $sys_data=$this->Mcsd->sys_list();
             $curr_data=array_merge($luzon_data,$vis_data,$sys_data);
-            $fp = fopen('data.json', 'w');
+            //$fp = fopen('data.json', 'w');
             // fwrite($fp, json_encode($curr_data, JSON_PRETTY_PRINT));  
             // fclose($fp);
              echo json_encode($curr_data);
          
+    }
+    public function get_ysd(){
+           $yluzon_data=$this->Mcsd->yluzon_list();
+            $yvis_data=$this->Mcsd->yvis_list();
+            $ysys_data=$this->Mcsd->ysys_list();
+            $ycurr_data=array_merge($yluzon_data,$yvis_data,$ysys_data);
+            //$fp = fopen('data.json', 'w');
+            // fwrite($fp, json_encode($curr_data, JSON_PRETTY_PRINT));  
+            // fclose($fp);
+             echo json_encode($ycurr_data);
+     
     }
 }
