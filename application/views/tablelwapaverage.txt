@@ -1,0 +1,42 @@
+    <table class="table-fill text-center" cellpadding="3px" style="width:100%;height:10vh;font-size:.9vw">
+            <br>
+               <div class="text-center"><strong>Year to Date</div>
+            <thead>
+            <tr class="text-center">
+                <th></th>
+                <th class="text-center" >SYSTEM</th>
+                <!--th style="width:10%" class="text-center">Int</th-->
+                <th class="text-center" >LUZON</th>
+                <!--th style="width:10%" class="text-center">Int</th-->
+                <th class="text-center" >VISAYAS</th>
+                <!--th style="width:10%" class="text-center">Int</th-->
+            </tr>
+</thead>
+<tbody class="table-hover">
+            <tr>
+                <th class="text-center table-success" rowspan="1" style="border-bottom:none;border-right:4px solid #9ea7af;">MIN</th>
+                <td class="text-center" id="ysminrtdl"></td>
+                <!--td id="iysminrtd" style="width:10%" class="text-center"></td-->                
+                <td class="text-center" id="ylminrtdl"></td>
+                <!--td id="iylminrtd" style="width:10%" class="text-center"></td-->
+                <td class="text-center" id="yvminrtdl"></td>
+                <!--td id="iyvminrtd" style="width:10%" class="text-center"></td-->
+            </tr>
+            <tr>
+                <th class="text-center table-success" rowspan="1" style="border-bottom:none;border-right:4px solid #9ea7af;">MAX</th>
+                <td class="text-center" id="ysmaxrtdl"></td>
+                <!--td id="iysmaxrtd" style="width:10%" class="text-center"></td-->
+                <td class="text-center" id="ylmaxrtdl"></td>
+                <!--td id="iylmaxrtd" style="width:10%" class="text-center"></td-->
+                <td class="text-center" id="yvmaxrtdl"></td>
+                <!--td id="iyvmaxrtd" style="width:10%" class="text-center"></td-->
+            </tr>
+             
+             <tr>
+                <th class="text-center table-success"style="border-bottom:none;border-right:4px solid #9ea7af;">AVE</th>
+                <td class="text-center" id="ysavertdl" colspan="1"></td>
+                <td class="text-center" id="ylavertdl" colspan="1"></td>
+                <td class="text-center" id="yvavertdl" colspan="1"></td>
+            </tr>
+</tbody>
+        </table>
