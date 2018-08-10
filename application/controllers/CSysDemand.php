@@ -3,8 +3,8 @@
         function __construct(){
             parent::__construct();
             $this->load->model('Mcsd');
-            $this->load->model('Mclwap');
-            $this->load->model('Mprice');
+            $this->load->model('Mclwap'); 
+            $this->load->model('Myadata');
         }
         public function index(){
             $this->load->view('vdashboard');
@@ -53,5 +53,12 @@
              echo json_encode($ycurr_data);
      
     }
+    public function get_yalldata(){
+            $dap_data=$this->Myadata->ydap_list();
+            $amp_data=$this->Myadata->yamp_list();
+            $yall_data=array_merge($dap_data,$amp_data);
+             echo json_encode($yall_data);
 
+    }
 }
+?>

@@ -18,7 +18,7 @@
 #container {
 
 	display:inline-flex;
-width:100%;
+width:110%;
     
 } 
 .table{
@@ -149,6 +149,7 @@ td {
 
   text-shadow: -1px -1px 1px rgba(0, 0, 0, 0.1);
   border-right: 1px solid #C1C3D1;
+  color: #000000;
 }
 
 td:last-child {
@@ -364,16 +365,7 @@ td.text-right {
                   downloading = 0;
                  }); 
                  }
-                
-
-
-          
-
-
-
-
-
-
+                 
 
     function get_data(){
        $(function () {
@@ -558,7 +550,12 @@ td.text-right {
          title: {
             text: 'Interval'
         },
-         tickInterval: 1
+         tickInterval: 1,
+         plotLines: [{
+                color: '#FF0000',
+                width: 3,
+                value: 0.2
+            }]
             
     },
     yAxis: {
@@ -1106,9 +1103,8 @@ td.text-right {
 
 
       function get_price(){
-        var ldappr=new Array(); var vdappr= new Array(); var mdappr= new Array(); nldappr=new Array();
-        var lrtdpr,lrtxpr,vdappr,vrtdpr,vrtxpr,mdappr,mrtdpr,mrtxpr=new Array();
-        var dap_apri1,dap_apri2,dap_apri3,dap_apri4,dap_apri5;
+        var ldappr=new Array(); var vdappr= new Array(); var mdappr= new Array(); nldappr=new Array(); var lavgdappr=new Array(); var lavgrtdpr=new Array(); var lavgrtxpr=new Array();var vavgdappr=new Array(); var vavgrtdpr=new Array(); var vavgrtxpr=new Array();
+        var lrtdpr=new Array(); var lrtxpr=new Array(); var mrtdpr=new Array(); var mrtxpr=new Array();var vrtdpr=new Array(); var vrtxpr=new Array();  
         var min_srtd,min_srtx,min_lrtd,min_lrtx,min_vrtd,min_vrtx,max_srtd,max_srtx,max_lrtd,max_lrtx,max_vrtd,max_vrtx,ave_srtd,ave_srtx,ave_lrtd,ave_lrtx,ave_vrtd,ave_vrtx,min_ldapel,min_vdapel,min_sdapel=0;
         var imin_srtd,imin_srtx,imin_lrtd,imin_lrtx,imin_vrtd,imin_vrtx,imax_srtd,imax_srtx,imax_lrtd,imax_lrtx,imax_vrtd,imax_vrtx=0;
        
@@ -1148,7 +1144,75 @@ td.text-right {
                         else{
                             return x.indexOf(minmax);
                         }
+                    
                     }
+                    function trueRound(value, digits){
+                        var x = (Math.round((value*Math.pow(10,digits)).toFixed(digits-1))/Math.pow(10,digits)).toFixed(digits);
+                        return x.replace(/(\.[0-9]*?)0+$/, "$1").replace(/\.$/, "");        
+                    }
+                        // function splitArray(arr, numOfParts){
+                        // const splitedArray = []
+                        // for (let i = 0; i < numOfParts;i++) {
+                        //     const numOfItemsToSplice = arr.length / 10;
+                        //     splitedArray.push(arr.splice(0, numOfItemsToSplice))
+                        // }
+                        // return splitedArray;
+                        // }
+                    function splitArray(arr, n) {
+                        var rest = arr.length % n, // how much to divide
+                            restUsed = rest, // to keep track of the division over the elements
+                            partLength = Math.floor(arr.length / n),
+                            result = [];
+
+                        for(var i = 0; i < arr.length; i += partLength) {
+                            var end = partLength + i,
+                                add = false;
+
+                            if(rest !== 0 && restUsed) { // should add one element for the division
+                                end++;
+                                restUsed--; // we've used one division element now
+                                add = true;
+                            }
+
+                            result.push(arr.slice(i, end)); // part of the array
+
+                            if(add) {
+                                i++; // also increment i in the case we added an extra element for division
+                            }
+                        }
+
+                        return result;
+                    }
+
+                    function getAVG(a,o){ 
+                        console.log("ino "+0);
+                        var newARR= a[0].length;
+                        var newARR1= []; 
+                        for(var x=0;x<newARR;x++){
+                            for(var y=0;y<a.length;y++){
+                                var l=a[y][x];
+                                console.log("xlen "+a.length);
+                                console.log("ylen "+a[0].length);
+                                console.log("["+y+"]"+"["+x+"]");
+                                console.log(l);
+                                newARR1.push(l); 
+                                console.log("newarr1 "+newARR1);
+                               
+                                    
+                            }
+                           
+                            o.push(avg(newARR1)); 
+                                  console.log(o);
+                            newARR1=[];
+
+                        }
+
+                        console.log("o"+newARR1+"_"+newARR+"_"+a.length);
+                        return o;
+                    }
+                    function precise(x) {
+                        return x.toPrecision(2).substr(0,3);
+                        }
                     
                  data.forEach(function(arr) {
                               if(arr['dap_partid'] == "APRI" || arr['dap_partid'] == "TLI" ||arr['dap_partid'] == "TMO" ||arr['dap_partid'] == "PEC") {
@@ -1156,37 +1220,287 @@ td.text-right {
                                 ldappr.push(parseInt(arr['dap_pr_' + pad(i, 2)],10));
                                 }
                                 
-                                  
+                                   console.log("ldappr: "+ldappr);
                                 
                               }
-                              while(ldappr.length){
-                                    nldappr.push(ldappr.splice(0,24));
+                                if(arr['amp_partid'] == "APRI" || arr['amp_partid'] == "TLI" ||arr['amp_partid'] == "TMO" ||arr['amp_partid'] == "PEC") {
+                                for(var i = 1; i <= 24; ++i) {      
+                                lrtdpr.push(parseInt(arr['rtd_price_' + pad(i, 2)],10));
                                 }
-                               
+                                
+                                   console.log("lrtdpr: "+lrtdpr);
+                                
+                              }
+                               if(arr['amp_partid'] == "APRI" || arr['amp_partid'] == "TLI" ||arr['amp_partid'] == "TMO" ||arr['amp_partid'] == "PEC") {
+                                for(var i = 1; i <= 24; ++i) {      
+                                lrtxpr.push(parseInt(arr['rtx_price_' + pad(i, 2)],10));
+                                }
+                                
+                                   console.log("lrtxpr: "+lrtxpr);
+                                
+                              }
+                            
+                             
 
-                             if(arr['dap_partid'] == "EAUC" ) {
+
+                             if(arr['dap_partid'] == "EAUC" || arr['dap_partid'] == "CPPC" ) {
                                 for(var i = 1; i <= 24; ++i) {      
                                 vdappr.push(parseInt(arr['dap_pr_' + pad(i, 2)],10));
+                                }
                                 
+                                   console.log("vdappr: "+vdappr);
                                 
                               }
-                              console.log("vispr: "+vdappr);
-                             }
-                             if(arr['dap_partid'] == "CPPC" ) {
+                                if(arr['amp_partid'] == "EAUC" || arr['amp_partid'] == "CPPC") {
                                 for(var i = 1; i <= 24; ++i) {      
-                                mdappr.push(parseInt(arr['dap_pr_' + pad(i, 2)],10));
+                                vrtdpr.push(parseInt(arr['rtd_price_' + pad(i, 2)],10));
+                                }
                                 
+                                   console.log("vrtdpr: "+vrtdpr);
                                 
                               }
-                              console.log("minpr: "+mdappr);
-                             }
-
+                               if(arr['amp_partid'] == "EAUC" || arr['amp_partid'] == "CPPC") {
+                                for(var i = 1; i <= 24; ++i) {      
+                                vrtxpr.push(parseInt(arr['rtx_price_' + pad(i, 2)],10));
+                                }
+                                
+                                   console.log("vrtxpr: "+vrtxpr);
+                                
+                              }
+                      
                                 
                                 });
                                 downloading =0;
-                                 console.log(nldappr[0][0]);  
+                                 
+                                    console.log(splitArray(ldappr,13));
+                                    console.log(splitArray(bouncer(lrtdpr),13));
+                                    console.log(splitArray(bouncer(lrtxpr),13));
+                                    getAVG(splitArray(ldappr,13),lavgdappr);
+                                    console.log("lavgdappr:"+lavgdappr);
+                                    getAVG(splitArray(bouncer(lrtdpr),13),lavgrtdpr);                                    
+                                    console.log("lavgrtdpr:"+lavgrtdpr); 
+                                    getAVG(splitArray(bouncer(lrtxpr),13),lavgrtxpr);
+                                    console.log("lavgrtxpr:"+lavgrtxpr);
+                                    //v
+                                    console.log(splitArray(vdappr,2));
+                                    console.log(splitArray(bouncer(vrtdpr),2));
+                                    console.log(splitArray(bouncer(vrtxpr),2));
+                                    getAVG(splitArray(vdappr,2),vavgdappr);
+                                    console.log("vavgdappr:"+vavgdappr);
+                                    getAVG(splitArray(bouncer(vrtdpr),2),vavgrtdpr);                                    
+                                    console.log("vavgrtdpr:"+vavgrtdpr); 
+                                    getAVG(splitArray(bouncer(vrtxpr),2),vavgrtxpr);
+                                    console.log("vavgrtxpr:"+vavgrtxpr);
+                                    
+                                ave_lrtdpr=avg(lrtdpr);
+                                ave_lrtxpr=avg(lrtxpr);
+                                min_lrtdpr=Math.min(...bouncer(lavgrtdpr),...bouncer(lavgdappr));
+                                max_lrtdpr=Math.max(...bouncer(lavgrtdpr),...bouncer(lavgdappr)); 
+                                min_lrtxpr=Math.min(...bouncer(lavgrtxpr));
+                                max_lrtxpr=Math.max(...bouncer(lavgrtxpr)); 
+                                console.log("ldapelpr"+lavgrtdpr);
+                                imin_lrtdpr=getInterval(lavgrtdpr,lavgdappr,min_lrtdpr)+1;
+                                console.log(imin_lrtd);
+                                imax_lrtdpr=getInterval(lavgrtdpr,lavgdappr,max_lrtdpr)+1; 
+                                imin_lrtxpr=lavgrtxpr.indexOf(min_lrtxpr)+1; 
+                                imax_lrtxpr=lavgrtxpr.indexOf(max_lrtxpr)+1;  
+                                $("#lminrtxpr").html(formatNumber("<strong>"+precise(parseInt(min_lrtxpr)))+"<br></strong><span style='font-size:75%;'>"+"("+pad(imin_lrtxpr,2)+"00H"+")");                                
+                                $("#lmaxrtxpr").html(formatNumber("<strong>"+precise(parseInt(max_lrtxpr)))+"<br></strong><span style='font-size:75%;'>"+"("+pad(imax_lrtxpr,2)+"00H"+")");
+                                $("#lavertxpr").html(formatNumber("<strong>"+precise(parseInt(ave_lrtxpr))));
+                                $("#lminrtdpr").html(formatNumber("<strong>"+precise(parseInt(min_lrtdpr)))+"<br></strong><span style='font-size:75%;'>"+"("+pad(imin_lrtdpr,2)+"00H"+")");
+                                $("#lmaxrtdpr").html(formatNumber("<strong>"+precise(parseInt(max_lrtdpr)))+"<br></strong><span style='font-size:75%;'>"+"("+pad(imax_lrtdpr,2)+"00H"+")");                                
+                                $("#lavertdpr").html(formatNumber("<strong>"+precise(parseInt(ave_lrtdpr))));
+
+                                ave_vrtdpr=avg(vrtdpr);
+                                ave_vrtxpr=avg(vrtxpr);
+                                min_vrtdpr=Math.min(...bouncer(vavgrtdpr),...bouncer(vavgdappr));
+                                max_vrtdpr=Math.max(...bouncer(vavgrtdpr),...bouncer(vavgdappr)); 
+                                min_vrtxpr=Math.min(...bouncer(vavgrtxpr));
+                                max_vrtxpr=Math.max(...bouncer(vavgrtxpr)); 
+                                console.log("vdapelpr"+vavgrtdpr);
+                                imin_vrtdpr=getInterval(vavgrtdpr,vavgdappr,min_vrtdpr)+1;
+                                console.log(imin_vrtd);
+                                imax_vrtdpr=getInterval(vavgrtdpr,vavgdappr,max_vrtdpr)+1; 
+                                imin_vrtxpr=vavgrtxpr.indexOf(min_vrtxpr)+1; 
+                                imax_vrtxpr=vavgrtxpr.indexOf(max_vrtxpr)+1;  
+                                $("#vminrtxpr").html(formatNumber("<strong>"+precise(parseInt(min_vrtxpr)))+"<br></strong><span style='font-size:75%;'>"+"("+pad(imin_vrtxpr,2)+"00H"+")");                                
+                                $("#vmaxrtxpr").html(formatNumber("<strong>"+precise(parseInt(max_vrtxpr)))+"<br></strong><span style='font-size:75%;'>"+"("+pad(imax_vrtxpr,2)+"00H"+")");
+                                $("#vavertxpr").html(formatNumber("<strong>"+precise(parseInt(ave_vrtxpr))));
+                                $("#vminrtdpr").html(formatNumber("<strong>"+precise(parseInt(min_vrtdpr)))+"<br></strong><span style='font-size:75%;'>"+"("+pad(imin_vrtdpr,2)+"00H"+")");
+                                $("#vmaxrtdpr").html(formatNumber("<strong>"+precise(parseInt(max_vrtdpr)))+"<br></strong><span style='font-size:75%;'>"+"("+pad(imax_vrtdpr,2)+"00H"+")");                                
+                                $("#vavertdpr").html(formatNumber("<strong>"+precise(parseInt(ave_vrtdpr))));
+
+                                // ave_mrtdpr=avg(mrtdpr);
+                                // ave_mrtxpr=avg(mrtxpr);
+                                // min_mrtdpr=Math.min(...bouncer(mrtdpr),...bouncer(mdappr));
+                                // max_mrtdpr=Math.max(...bouncer(mrtdpr),...bouncer(mdappr)); 
+                                // min_mrtxpr=Math.min(...bouncer(mrtxpr));
+                                // max_mrtxpr=Math.max(...bouncer(mrtxpr)); 
+                                // console.log("mdapelpr"+mrtdpr);
+                                // imin_mrtdpr=getInterval(mrtdpr,mdappr,min_mrtdpr)+1;
+                                // console.log(imin_mrtdpr);
+                                // imax_mrtdpr=getInterval(mrtdpr,mdappr,max_mrtdpr)+1; 
+                                // imin_mrtxpr=mrtxpr.indexOf(min_mrtxpr)+1; 
+                                // imax_mrtxpr=mrtxpr.indexOf(max_mrtxpr)+1;  
+                                // $("#sminrtxpr").html(formatNumber("<strong>"+parseInt(min_mrtxpr))+"<br></strong><span style='font-size:75%;'>"+"("+pad(imin_mrtxpr,2)+"00H"+")");                                
+                                // $("#smaxrtxpr").html(formatNumber("<strong>"+parseInt(max_mrtxpr))+"<br></strong><span style='font-size:75%;'>"+"("+pad(imax_mrtxpr,2)+"00H"+")");
+                                // $("#savertxpr").html(formatNumber("<strong>"+parseInt(ave_mrtxpr)));
+                                // $("#sminrtdpr").html(formatNumber("<strong>"+parseInt(min_mrtdpr))+"<br></strong><span style='font-size:75%;'>"+"("+pad(imin_mrtdpr,2)+"00H"+")");
+                                // $("#smaxrtdpr").html(formatNumber("<strong>"+parseInt(max_mrtdpr))+"<br></strong><span style='font-size:75%;'>"+"("+pad(imax_mrtdpr,2)+"00H"+")");                                
+                                // $("#savertdpr").html(formatNumber("<strong>"+parseInt(ave_mrtdpr)));
+                                
+
+             $('#container3').highcharts({
+    chart: {
+        backgroundColor: '#FFFFFF',
+        type: 'line',
+         
+    },
+    credits:{
+        enabled: false,
+    },
+
+     title: {
+        text: 'PRICE'
+        
+    },
+
+    legend: {
+        align: 'center',
+        verticalAlign: 'bottom',
+        borderWidth: 0,
+         itemStyle: {
+                
+                fontWeight: 'bold',
+                fontSize: '7px'
+            }
+    },
+
+    tooltip: {
+        shared: true,
+        crosshairs: true
+    },
+     xAxis: {
+        labels: {
+                style: { 
+                    fontSize:'15px'
+                }
+            },
+         
+         title: {
+            text: 'Interval',
+            style: { 
+                    fontSize:'15px'
+                }
+            
+        },
+         tickInterval: 1,
+         
+    gridLineWidth: 1,   
+    },
+    yAxis: {
+        min:0,
+        max:5000, 
+        labels: {
+                style: { 
+                    fontSize:'15px'
+                }
+            },
+        title: {
+            text: 'PHP/MWh',
+            style: { 
+                    fontSize:'15px'
+                }
+            
+        },
+        
+            tickInterval: 1
+    },
+   
+
+    plotOptions: {
+         line: {
+        animation: false
+    },
+    
+        series: {
+            marker: {
+                radius: 2
+            },
+            dataLabels: {
+                enabled: false
+            },
+           
+            lineWidth: 2, 
+            pointStart: 1,
+            showInLegend: true,
+            
+        }
+    },
+
+    series: [
+    //     {
+    //     showInLegend: false,   
+    //     name: 'SYS DAP',
+    //     data: lavgdappr,
+    //     color: '#ffcdd2'
+    // },{ 
+    //     showInLegend: false,   
+    //     name: 'SYS RTD',
+    //     data: lavgdappr,
+    //     color: '#e53935'
+    // },{
+    //     name: 'SYS',
+    //     data: lavgdappr,
+    //     color: '#b71c1c'
+    // },
+        {
+        showInLegend: false,   
+        name: 'LUZ DAP',
+        data: lavgdappr,
+        color: '#BBDEFB'
+    },  {
+        showInLegend: false,   
+        name: 'LUZ RTD',
+        data: lavgrtdpr,
+        color: '#1E88E5'
+
+    }, {
+        name: 'LUZ',
+        data: lavgrtxpr,
+        color: '#0D47A1'
+
+    }, {
+        showInLegend: false,   
+        name: 'VIS DAP',
+        data:  vavgdappr,
+        color: '#A5D6A7'
+    },{
+        showInLegend: false,   
+        name: 'VIS RTD',
+        data: vavgrtdpr,
+        color: '#43A047'
+
+        
+    },{
+        name: 'VIS',
+        data: vavgrtxpr,
+        color: '#1B5E20'
+
+    },],
+
+    responsive: {
+        rules: [{
+            condition: {
+                maxWidth: 1000
+            } 
+        }]
+    }
+                                 
             });
              downloading = 0;
+              
+                }); 
         });
 
 
@@ -1325,101 +1639,101 @@ td.text-right {
 </tbody>
         </table>
 </div>
-    
-      
-
+     
 </section>
 </main>
 </div>
 <div class="tr">
      <main style="display:flex;" >
     
-    <section style="width:70vw;height:50vh;overflow:inherit;display:flex;" >
+    <section style="width:100vw;height:50vh;overflow:inherit;display:flex;" >
     
-    <div id="container2" style="width:30vw;height:50vh;"></div>
+    <div id="container3" style="width:30vw;height:50vh;"></div>
 
     <!-- <div class="div2" style="width:100%;height:100%;" >  -->
 
     </section>
-    <section style="width:100%;height:50vh;overflow:inherit;display:inline-block">
+    <section style="width:150%;height:50vh;overflow:inherit;display:inline-block">
          <div class="container">
-        <table class="table-fill text-center " cellpadding="3px" style="width:100%;height:10vh;font-size:.9vw;">
+        <table class="table-fill text-center " cellpadding="2px" style="width:90%;height:40vh;font-size:1.4vw;">
              <br>
-            <div id="datetodayl" class="text-center" style="border:0px;"></div>
+            <div id="datetoday" class="text-center" style="border:0px;"></div>
     <thead>       
             <tr class="text-center">
                 <th class="text-center" colspan="2"></th>
-                <th class="text-center" >SYSTEM</th>
+                <th class="text-center" >LUZON</th>
                 <!-- <th style="width:10%" class="">Int</th> -->
-                <th class="text-center">LUZON</th>
-                <!-- <th style="width:10%" class="text-center">Int</th> -->
                 <th class="text-center">VISAYAS</th>
+                <!-- <th style="width:10%" class="text-center">Int</th> -->
+                 
                 <!-- <th style="width:10%" class="text-center">Int</th> -->
             </tr>
 </thead>
 <tbody class="table-hover">
             <tr>
-                <th class="table-success text-centerl" rowspan="3" style="border-bottom:none;border-right:none;font-size:80%;">R<br>T<br>D<br>-<br>D</br>A<br>P</th>
-                <th class="table-success text-centerl" style="border-bottom:none;border-right:4px solid #9ea7af;">MIN</th> 
-                <td class="text-center" id="sminrtdl"></td>
+                <th class="table-success text-center" rowspan="3" style="border-bottom:none;border-right:none;font-size:50%;">R<br>T<br>D<br>-<br>D</br>A<br>P</th>
+                <th class="table-success text-center" style="border-bottom:none;border-right:4px solid #9ea7af;font-size:60%;">MIN</th> 
                 <!-- <td id="isminrtd" style="width:10%" class="text-center"></td> -->
-                <td class="text-center" id="lminrtdl"></td>
-                <!-- <td id="ilminrtd" style="width:10%" class="text-center"></td> -->
-                <td class="text-center" id="vminrtdl"></td>
-                <!-- <td id="ivminrtd" style="width:10%" class="text-center"></td> -->
+                <td class="text-center" id="lminrtdpr"></td>
+                <!-- <td id="ilminrtdpr" style="width:10%" class="text-center"></td> -->
+                <td class="text-center" id="vminrtdpr"></td>
+                <!-- <td id="ivminrtdpr" style="width:10%" class="text-center"></td> -->
+                
             </tr>
             <tr>
-                <th class="table-success text-center" style="border-bottom:none;border-right:4px solid #9ea7af;">MAX</th>
-                <td class="text-center" id="smaxrtdl"></td>
-                <!-- <td id="ismaxrtd"style="width:10%" class="text-center"></td> -->
-                <td class="text-center" id="lmaxrtdl"></td>
-                <!-- <td id="ilmaxrtd"style="width:10%" class="text-center"></td> -->
-                <td class="text-center" id="vmaxrtdl"></td>
-                <!-- <td id="ivmaxrtd"style="width:10%" class="text-center"></td> -->
+                <th class="table-success text-center" style="border-bottom:none;border-right:4px solid #9ea7af;font-size:60%;">MAX</th>
+                <!-- <td id="ismaxrtdpr"style="width:10%" class="text-center"></td> -->
+                <td class="text-center" id="lmaxrtdpr"></td>
+                <!-- <td id="ilmaxrtdpr"style="width:10%" class="text-center"></td> -->
+                <td class="text-center" id="vmaxrtdpr"></td>
+                <!-- <td id="ivmaxrtdpr"style="width:10%" class="text-center"></td> -->
+                
             </tr>
             <tr>
-                <th class="table-success text-center" style="border-bottom:none;border-right:4px solid #9ea7af;">AVE</th>
-                <td class="text-center" id="savertdl" colspan="1"></td>
-                <td class="text-center" id="lavertdl" colspan="1"></td>
-                <td class="text-center" id="vavertdl" colspan="1"></td>
+                <th class="table-success text-center" style="border-bottom:none;border-right:4px solid #9ea7af;font-size:60%;">AVE</th>
+                <td class="text-center" id="lavertdpr" colspan="1"></td>
+                <td class="text-center" id="vavertdpr" colspan="1"></td>
+                 
             </tr>
             <tr>
-                <th class="table-info text-center" rowspan="3" style="border-bottom:none;border-right:none;color:#37474F;">R<br>T<br>X<br></th>
-                <th class="table-info text-center" style="border-bottom:none;border-right:4px solid #9ea7af;color:#37474F;">MIN</th>
-                <td id="sminrtxl" class="text-center"></td>
+                <th class="table-info text-center" rowspan="3" style="border-bottom:none;border-right:none;color:#37474F;font-size:50%;">R<br>T<br>X<br></th>
+                <th class="table-info text-center" style="border-bottom:none;border-right:4px solid #9ea7af;color:#37474F;font-size:60%;">MIN</th>
                 <!-- <td id="isminrtx"style="width:10%" class="text-center"></td> -->
-                <td id="lminrtxl" class="text-center"></td>
-                <!-- <td id="ilminrtx"style="width:10%" class="text-center"></td> -->
-                <td id="vminrtxl" class="text-center"></td>
-                <!-- <td id="ivminrtx"style="width:10%" class="text-center"></td> -->
+                <td id="lminrtxpr" class="text-center"></td>
+                <!-- <td id="ilminrtxpr"style="width:10%" class="text-center"></td> -->
+                <td id="vminrtxpr" class="text-center"></td>
+                <!-- <td id="ivminrtxpr"style="width:10%" class="text-center"></td> -->
+               
             </tr>
             <tr>
-                <th class="table-info text-center" style="border-bottom:none;border-right:4px solid #9ea7af;color:#37474F;">MAX</th>
-                <td id="smaxrtxl" class="text-center"></td>
-                <!-- <td id="ismaxrtx"style="width:10%" class="text-center"></td> -->
-                <td id="lmaxrtxl" class="text-center"></td>
-                <!-- <td id="ilmaxrtx"style="width:10%" class="text-center"></td> -->
-                <td id="vmaxrtxl" class="text-center"></td>
-                <!-- <td id="ivmaxrtx"style="width:10%" class="text-center"></td> -->
+                <th class="table-info text-center" style="border-bottom:none;border-right:4px solid #9ea7af;color:#37474F;font-size:60%;">MAX</th>
+                <!-- <td id="ismaxrtxpr"style="width:10%" class="text-center"></td> -->
+                <td id="lmaxrtxpr" class="text-center"></td>
+                <!-- <td id="ilmaxrtxpr"style="width:10%" class="text-center"></td> -->
+                <td id="vmaxrtxpr" class="text-center"></td>
+                <!-- <td id="ivmaxrtxpr"style="width:10%" class="text-center"></td> -->
+                
             </tr> 
             <tr>
-                <th class="table-info text-center" style="border-bottom:none;border-right:4px solid #9ea7af;color:#37474F;">AVE</th>
-                <td id="savertxl" colspan="1" class="text-center"></td>
-                <td id="lavertxl" colspan="1" class="text-center"></td>
-                <td id="vavertxl" colspan="1" class="text-center"></td>
+                <th class="table-info text-center" style="border-bottom:none;border-right:4px solid #9ea7af;color:#37474F;font-size:60%;">AVE</th>
+                <td id="lavertxpr" colspan="1" class="text-center"></td>
+                <td id="vavertxpr" colspan="1" class="text-center"></td>
+                
             </tr>
 </tbody>
 
         </table>
        
-</div>
-    
-      
 
+        
+</div>
+     
 </section>
 </main>
 </div>
-<div class="bl"></div>
+<div class="bl">
+    
+</div>
 <div class="br"></div>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
 	</body>
